@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
             /////////////// INFORMATION ///////////////
 // This script is intended to work on a GameObject with
@@ -41,6 +42,8 @@ public class CustomizablePlatformerMovement : MonoBehaviour
     [Header("Graphics")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator anim;
+
+    public UnityEvent onWalk, onIdle;
     
     void Awake()
     {
@@ -68,11 +71,19 @@ public class CustomizablePlatformerMovement : MonoBehaviour
             anim.SetBool("isGrounded",true);
         else
             anim.SetBool("isGrounded", false);
-        
-        if(0.01f > moveInput.x && moveInput.x > -0.01f)
-            anim.SetBool("isWalking",false);
+
+        if (0.01f > moveInput.x && moveInput.x > -0.01f)
+        {
+            anim.SetBool("isWalking",false);  
+            if(isGrounded)
+                onIdle.Invoke();
+        }
         else
-            anim.SetBool("isWalking",true);
+        {
+            anim.SetBool("isWalking",true); 
+            if(isGrounded)
+                onWalk.Invoke();
+        }
         
         // Check if character lost contact with ground this frame
         if (wasGrounded == true && isGrounded == false)
